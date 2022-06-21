@@ -145,9 +145,10 @@ def customize_addcards():
         '''
         bb = self.form.buttonBox
         ar = QDialogButtonBox.ActionRole
+        shortcut = QKeySequence(my_shortcut)
         # button
         fastwqBtn = QPushButton(_("QUERY") + u" " + downArrow())
-        fastwqBtn.setShortcut(QKeySequence(my_shortcut))
+        fastwqBtn.setShortcut(shortcut)
         fastwqBtn.setToolTip(_(u"Shortcut: %s") % shortcut(my_shortcut))
         bb.addButton(fastwqBtn, ar)
 
@@ -156,10 +157,10 @@ def customize_addcards():
             if isinstance(e, QMouseEvent):
                 if e.buttons() & Qt.LeftButton:
                     menu = QMenu(self)
-                    menu.addAction(
-                        _("ALL_FIELDS"),
-                        lambda: query_from_editor_fields(self.editor),
-                        QKeySequence(my_shortcut))
+                    allFieldsAction = QAction(_("ALL_FIELDS"))
+                    allFieldsAction.setShortcut(shortcut)
+                    allFieldsAction.triggered.connect(lambda: query_from_editor_fields(self.editor))
+                    menu.addAction(allFieldsAction)
                     # default options
                     mid = self.editor.note.model()['id']
                     conf = config.get_maps(mid)
@@ -178,7 +179,10 @@ def customize_addcards():
                                 lambda mid=mid, i=i: set_options_def(mid, i))
                         menu.addSeparator()
                     # end default options
-                    menu.addAction(_("OPTIONS"), lambda: show_options(self, self.editor.note.model()['id']))
+                    optionsAction = QAction(_("OPTIONS"))
+                    optionsAction.triggered.connect(lambda: show_options(self, self.editor.note.model()['id']))
+                    menu.addAction(allFieldsAction)
+                    menu.addAction(optionsAction)
                     menu.exec_(
                         fastwqBtn.mapToGlobal(QPoint(0, fastwqBtn.height())))
             else:

@@ -29,17 +29,19 @@ from .utils import get_icon
 __all__ = ['APP_ICON', 'config']
 
 APP_ICON = get_icon('wqicon.png')  # Addon Icon
-
+addon_path = os.path.dirname(__file__)
+addonfoldername = os.path.basename(addon_path)
+user_files = os.path.join(addon_path, "user_files")
+config_path = os.path.join(user_files, 'fastwqcfg.json')
 
 class Config(object):
     """
     Addon Config
     """
 
-    _CONFIG_FILENAME = 'fastwqcfg.json'  # Config File Path
 
     def __init__(self, window):
-        self.path = u'_' + self._CONFIG_FILENAME
+        self.path = config_path
         self.window = window
         self.version = '0'
         self.data = None
