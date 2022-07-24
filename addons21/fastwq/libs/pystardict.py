@@ -495,35 +495,11 @@ class Dictionary(dict):
             self._dict_cache[k] = value
             return value
 
-    def __gt__(self, y):
-        """
-        raises NotImplemented exception
-        """
-        raise NotImplementedError()
-
-    def __iter__(self):
-        """
-        raises NotImplemented exception
-        """
-        raise NotImplementedError()
-
-    def __le__(self):
-        """
-        raises NotImplemented exception
-        """
-        raise NotImplementedError()
-
     def __len__(self):
         """
         returns number of words provided by wordcount parameter of the x.ifo
         """
         return self.ifo.wordcount
-
-    def __lt__(self):
-        """
-        raises NotImplemented exception
-        """
-        raise NotImplementedError()
 
     def __ne__(self, y):
         """
