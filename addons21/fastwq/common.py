@@ -145,10 +145,10 @@ def customize_addcards():
         '''
         bb = self.form.buttonBox
         ar = QDialogButtonBox.ActionRole
-        shortcut = QKeySequence(my_shortcut)
+        qshortcut = QKeySequence(my_shortcut)
         # button
         fastwqBtn = QPushButton(_("QUERY") + u" " + downArrow())
-        fastwqBtn.setShortcut(shortcut)
+        fastwqBtn.setShortcut(qshortcut)
         fastwqBtn.setToolTip(_(u"Shortcut: %s") % shortcut(my_shortcut))
         bb.addButton(fastwqBtn, ar)
 
@@ -158,7 +158,7 @@ def customize_addcards():
                 if e.buttons() & Qt.LeftButton:
                     menu = QMenu(self)
                     allFieldsAction = QAction(_("ALL_FIELDS"))
-                    allFieldsAction.setShortcut(shortcut)
+                    allFieldsAction.setShortcut(qshortcut)
                     allFieldsAction.triggered.connect(lambda: query_from_editor_fields(self.editor))
                     menu.addAction(allFieldsAction)
                     # default options
@@ -241,9 +241,10 @@ def context_menu():
                         service_pool.put(s)
 
         submenu = menu.addMenu(_('QUERY'))
-        submenu.addAction(
-            _('ALL_FIELDS'), lambda: query_from_editor_fields(web_view.editor),
-            QKeySequence(my_shortcut))
+        allFieldsAction = QAction(_("ALL_FIELDS"))
+        allFieldsAction.setShortcut(QKeySequence(my_shortcut))
+        allFieldsAction.triggered.connect(lambda: query_from_editor_fields(web_view.editor))
+        submenu.addAction(allFieldsAction)
         if len(curr_flds) > 0:
             # quer hook method
             def query_from_editor_hook(i):
