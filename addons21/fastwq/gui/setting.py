@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -23,16 +22,16 @@ from ..context import config
 from ..lang import _
 from .base import Dialog
 
-__all__ = ['SettingDialog']
+__all__ = ["SettingDialog"]
 
 
 class SettingDialog(Dialog):
-    '''
+    """
     Setting window, some golbal params for query function.
-    '''
+    """
 
-    def __init__(self, parent, title=u'Setting'):
-        super(SettingDialog, self).__init__(parent, title)
+    def __init__(self, parent, title="Setting"):
+        super().__init__(parent, title)
         self.setFixedWidth(400)
         self.check_force_update = None
         self.check_ignore_accents = None
@@ -115,16 +114,16 @@ class SettingDialog(Dialog):
 
     def accept(self):
         self.save()
-        super(SettingDialog, self).accept()
+        super().accept()
 
     def reset(self):
         data = {
-            'force_update': False,
-            'ignore_accents': False,
-            'ignore_mdx_wordcase': False,
-            'thread_number': 16,
-            'cloze_str': '{{c1::%s}}',
-            'sound_str': '[sound:{0}]'
+            "force_update": False,
+            "ignore_accents": False,
+            "ignore_mdx_wordcase": False,
+            "thread_number": 16,
+            "cloze_str": "{{c1::%s}}",
+            "sound_str": "[sound:{0}]",
         }
         config.update(data)
         self.check_force_update.setChecked(config.force_update)
@@ -136,11 +135,11 @@ class SettingDialog(Dialog):
 
     def save(self):
         data = {
-            'force_update': self.check_force_update.isChecked(),
-            'ignore_accents': self.check_ignore_accents.isChecked(),
-            'ignore_mdx_wordcase': self.check_ighore_mdx_wordcase.isChecked(),
-            'thread_number': self.input_thread_number.value(),
-            'cloze_str': self.input_cloze_str.text(),
-            'sound_str': self.input_sound_str.text()
+            "force_update": self.check_force_update.isChecked(),
+            "ignore_accents": self.check_ignore_accents.isChecked(),
+            "ignore_mdx_wordcase": self.check_ighore_mdx_wordcase.isChecked(),
+            "thread_number": self.input_thread_number.value(),
+            "cloze_str": self.input_cloze_str.text(),
+            "sound_str": self.input_sound_str.text(),
         }
         config.update(data)

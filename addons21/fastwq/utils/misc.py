@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -22,11 +21,13 @@ from functools import wraps
 from aqt.utils import showInfo
 from aqt.qt import QIcon
 
-__all__ = ['ignore_exception',
-           'get_model_byId',
-           'get_icon',
-           'get_ord_from_fldname',
-           'MapDict']
+__all__ = [
+    "ignore_exception",
+    "get_model_byId",
+    "get_icon",
+    "get_ord_from_fldname",
+    "MapDict",
+]
 
 
 def ignore_exception(func):
@@ -35,39 +36,40 @@ def ignore_exception(func):
         try:
             return func(*args, **kwargs)
         except:
-            return ''
+            return ""
+
     return wrap
 
 
 def get_model_byId(models, id):
     for m in list(models.all()):
         # showInfo(str(m['id']) + ', ' + m['name'])
-        if m['id'] == id:
+        if m["id"] == id:
             return m
 
 
 def get_ord_from_fldname(model, name):
-    flds = model['flds']
+    flds = model["flds"]
     for fld in flds:
-        if fld['name'] == name:
-            return fld['ord']
+        if fld["name"] == name:
+            return fld["ord"]
 
 
 def get_icon(filename):
-    curdir = os.path.dirname(os.path.abspath(__file__))
+    curdir = os.path.dirname(__file__)
     pardir = os.path.join(curdir, os.pardir)
-    path = os.path.join(pardir, 'res', filename)
+    path = os.path.join(pardir, "res", filename)
     return QIcon(path)
 
 
 # Some query words like 'Saudi Arabia' is comprised by two or more words that split by '%20'(space),
 # it is an invalid query format. (Validated Dictionary: Longman, oxford learning)
 def format_multi_query_word(words: str):
-    _space = '%20'
+    _space = "%20"
     if words is None or _space not in words:
         return words
 
-    return words.lower().replace(_space, '-')
+    return words.lower().replace(_space, "-")
 
 
 class MapDict(dict):
@@ -78,7 +80,7 @@ class MapDict(dict):
     """
 
     def __init__(self, *args, **kwargs):
-        super(MapDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for arg in args:
             if isinstance(arg, dict):
                 for k, v in arg.items():
@@ -95,12 +97,12 @@ class MapDict(dict):
         self.__setitem__(key, value)
 
     def __setitem__(self, key, value):
-        super(MapDict, self).__setitem__(key, value)
+        super().__setitem__(key, value)
         self.__dict__.update({key: value})
 
     def __delattr__(self, item):
         self.__delitem__(item)
 
     def __delitem__(self, key):
-        super(MapDict, self).__delitem__(key)
+        super().__delitem__(key)
         del self.__dict__[key]

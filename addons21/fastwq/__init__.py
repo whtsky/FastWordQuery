@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -28,7 +27,7 @@ if isMac:
     ssl._create_default_https_context = ssl._create_unverified_context
 
 ############## other config here ##################
-shortcut = ('Ctrl+Alt' if isMac else 'Ctrl') + '+Q'
+shortcut = ("Ctrl+Alt" if isMac else "Ctrl") + "+Q"
 
 ###################################################
 
@@ -36,6 +35,7 @@ shortcut = ('Ctrl+Alt' if isMac else 'Ctrl') + '+Q'
 def start_here():
     from . import common as fastwq
     from .context import config
+
     config.read()
     fastwq.my_shortcut = shortcut
     if not fastwq.have_setup:

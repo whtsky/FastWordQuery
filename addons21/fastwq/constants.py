@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -19,29 +18,30 @@
 
 from .lang import _
 
-__all__ = ['VERSION', 'Endpoint', 'Template']
+__all__ = ["VERSION", "Endpoint", "Template"]
 
-VERSION = 'v2.0.0b'
+VERSION = "v2.0.0b"
 
 
 class Endpoint:
-    repository = u'https://github.com/sth2018/FastWordQuery'
-    feedback_issue = u'https://github.com/sth2018/FastWordQuery/issues'
-    feedback_mail = u'sth201807@gmail.com'
-    check_version = u'sth2018/FastWordQuery'
-    user_guide = u'https://sth2018.github.io/FastWordQuery'
+    repository = "https://github.com/sth2018/FastWordQuery"
+    feedback_issue = "https://github.com/sth2018/FastWordQuery/issues"
+    feedback_mail = "sth201807@gmail.com"
+    check_version = "sth2018/FastWordQuery"
+    user_guide = "https://sth2018.github.io/FastWordQuery"
     version = VERSION
 
 
 class Template:
-    tmpl_about = u'''<b>{t0}</b><br/>{version}<br/><b>{t1}</b><br/>
+    tmpl_about = """<b>{t0}</b><br/>{version}<br/><b>{t1}</b><br/>
 <a href="{url}">{url}</a><br/><b>{t2}</b><br/>
 <a href="{feedback0}">{feedback0}</a><br/>
-<a href="mailto:{feedback1}">{feedback1}</a>'''.format(
-        t0=_('VERSION'),
+<a href="mailto:{feedback1}">{feedback1}</a>""".format(
+        t0=_("VERSION"),
         version=VERSION,
-        t1=_('REPOSITORY'),
+        t1=_("REPOSITORY"),
         url=Endpoint.repository,
-        t2=_('FEEDBACK'),
+        t2=_("FEEDBACK"),
         feedback0=Endpoint.feedback_issue,
-        feedback1=Endpoint.feedback_mail)
+        feedback1=Endpoint.feedback_mail,
+    )

@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -26,24 +25,24 @@ from aqt import mw
 from .constants import VERSION
 from .utils import get_icon
 
-__all__ = ['APP_ICON', 'config']
+__all__ = ["APP_ICON", "config"]
 
-APP_ICON = get_icon('wqicon.png')  # Addon Icon
+APP_ICON = get_icon("wqicon.png")  # Addon Icon
 addon_path = os.path.dirname(__file__)
 addonfoldername = os.path.basename(addon_path)
 user_files = os.path.join(addon_path, "user_files")
-config_path = os.path.join(user_files, 'fastwqcfg.json')
+config_path = os.path.join(user_files, "fastwqcfg.json")
 
-class Config(object):
+
+class Config:
     """
     Addon Config
     """
 
-
     def __init__(self, window):
         self.path = config_path
         self.window = window
-        self.version = '0'
+        self.version = "0"
         self.data = None
         self.read()
 
@@ -55,15 +54,13 @@ class Config(object):
         """
         Update && Save
         """
-        data['version'] = VERSION
-        data['%s_last' % self.pmname] = data.get('last_model',
-                                                 self.last_model_id)
+        data["version"] = VERSION
+        data["%s_last" % self.pmname] = data.get("last_model", self.last_model_id)
         self.data.update(data)
-        with open(self.path, 'w', encoding='utf-8') as f:
-            json.dump(
-                self.data, f, indent=4, sort_keys=True, ensure_ascii=False)
+        with open(self.path, "w", encoding="utf-8") as f:
+            json.dump(self.data, f, indent=4, sort_keys=True, ensure_ascii=False)
             f.close()
-        runHook('config.update')
+        runHook("config.update")
 
     def read(self):
         """
@@ -72,15 +69,16 @@ class Config(object):
         if self.data:
             return self.data
         try:
-            path = self.path if os.path.exists(
-                self.path) else u'.' + self._CONFIG_FILENAME
-            with open(path, 'r', encoding="utf-8") as f:
+            path = (
+                self.path if os.path.exists(self.path) else "." + self._CONFIG_FILENAME
+            )
+            with open(path, encoding="utf-8") as f:
                 self.data = json.load(f)
                 f.close()
             if not os.path.exists(self.path):
                 self.update(self.data)
         except Exception as e:
-            print('can not find config file', e)
+            print("can not find config file", e)
             self.data = dict()
 
     def get_maps(self, model_id):
@@ -91,67 +89,67 @@ class Config(object):
 
     @property
     def last_model_id(self):
-        return self.data.get('%s_last' % self.pmname, 0)
+        return self.data.get("%s_last" % self.pmname, 0)
 
     @property
     def dirs(self):
-        return self.data.get('dirs', list())
+        return self.data.get("dirs", list())
 
     @property
     def dicts(self):
-        return self.data.get('dicts', dict())
+        return self.data.get("dicts", dict())
 
     @property
     def use_filename(self):
-        return self.data.get('use_filename', True)
+        return self.data.get("use_filename", True)
 
     @property
     def export_media(self):
-        return self.data.get('export_media', False)
+        return self.data.get("export_media", False)
 
     @property
     def force_update(self):
-        return self.data.get('force_update', False)
+        return self.data.get("force_update", False)
 
     @property
     def ignore_mdx_wordcase(self):
-        return self.data.get('ignore_mdx_wordcase', False)
+        return self.data.get("ignore_mdx_wordcase", False)
 
     @property
     def thread_number(self):
         """
         Query Thread Number
         """
-        return self.data.get('thread_number', 16)
+        return self.data.get("thread_number", 16)
 
     @property
     def last_folder(self):
         """
         last file dialog open path
         """
-        return self.data.get('last_folder', '')
+        return self.data.get("last_folder", "")
 
     @property
     def ignore_accents(self):
-        '''ignore accents of field in querying'''
-        return self.data.get('ignore_accents', False)
+        """ignore accents of field in querying"""
+        return self.data.get("ignore_accents", False)
 
     @property
     def cloze_str(self):
-        '''cloze formater string'''
-        tmpstr = self.data.get('cloze_str', '{{c1::%s}}')
-        if len(tmpstr.split('%s')) != 2:
-            tmpstr = '{{c1::%s}}'
+        """cloze formater string"""
+        tmpstr = self.data.get("cloze_str", "{{c1::%s}}")
+        if len(tmpstr.split("%s")) != 2:
+            tmpstr = "{{c1::%s}}"
         return tmpstr
 
     @property
     def sound_str(self):
-        '''sound formater string'''
+        """sound formater string"""
         # 设置音频播放按钮大小
         # <span style="width:24px;height:24px;">[sound:{0}]</span>
-        tmpstr = self.data.get('sound_str', u'[sound:{0}]')
-        if len(tmpstr.split('{0}')) != 2:
-            tmpstr = u'[sound:{0}]'
+        tmpstr = self.data.get("sound_str", "[sound:{0}]")
+        if len(tmpstr.split("{0}")) != 2:
+            tmpstr = "[sound:{0}]"
         return tmpstr
 
 

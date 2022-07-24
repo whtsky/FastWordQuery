@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -21,5 +20,5 @@ from .manager import ServiceManager
 from .pool import ServicePool
 from .base import QueryResult, copy_static_file
 
-service_manager = ServiceManager()                             # Service Manager
-service_pool = ServicePool(service_manager)                    # Service Instance Pool Manager
+service_manager = ServiceManager()  # Service Manager
+service_pool = ServicePool(service_manager)  # Service Instance Pool Manager

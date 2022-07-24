@@ -1,22 +1,25 @@
-__all__ = ('language', 'stemmer')
+__all__ = ("language", "stemmer")
 
 from .english_stemmer import EnglishStemmer
 
 language = {
-    'english': EnglishStemmer,
+    "english": EnglishStemmer,
 }
 
 try:
     import Stemmer
+
     cext_available = True
 except ImportError:
     cext_available = False
+
 
 def algorithms():
     if cext_available:
         return Stemmer.language()
     else:
         return list(language.keys())
+
 
 def stemmer(lang):
     if cext_available:

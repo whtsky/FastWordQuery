@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -25,19 +24,21 @@ from aqt.qt import *
 from ..context import APP_ICON
 from ..lang import _
 
-__all__ = ['ProgressWindow']
+__all__ = ["ProgressWindow"]
 
-_INFO_TEMPLATE = u''.join([
-    u'<strong>' + _('QUERIED') + u'</strong>',
-    u'<p>' + 45 * u'-' + u'</p>',
-    u'<p>' + _('SUCCESS') + u' <b>{}</b> ' + _('WORDS') + u'</p>',
-    u'<p>' + _('SKIPED') + u' <b>{}</b> ' + _('WORDS') + u'</p>',
-    u'<p>' + _('UPDATE') + u' <b>{}</b> ' + _('FIELDS') + u'</p>',
-    u'<p>' + _('FAILURE') + u' <b>{}</b> ' + _('WORDS') + u'</p>',
-])
+_INFO_TEMPLATE = "".join(
+    [
+        "<strong>" + _("QUERIED") + "</strong>",
+        "<p>" + 45 * "-" + "</p>",
+        "<p>" + _("SUCCESS") + " <b>{}</b> " + _("WORDS") + "</p>",
+        "<p>" + _("SKIPED") + " <b>{}</b> " + _("WORDS") + "</p>",
+        "<p>" + _("UPDATE") + " <b>{}</b> " + _("FIELDS") + "</p>",
+        "<p>" + _("FAILURE") + " <b>{}</b> " + _("WORDS") + "</p>",
+    ]
+)
 
 
-class ProgressWindow(object):
+class ProgressWindow:
     """
     Query progress window
     """
@@ -55,21 +56,23 @@ class ProgressWindow(object):
         if self.abort():
             return
 
-        if data.type == 'count':
+        if data.type == "count":
             self._msg_count.update(data)
         else:
             return
 
         words_number, fields_number, fails_number, skips_number = (
-            self._msg_count.get('words_number', 0),
-            self._msg_count.get('fields_number', 0),
-            self._msg_count.get('fails_number', 0),
-            self._msg_count.get('skips_number', 0))
-        number_info = _INFO_TEMPLATE.format(words_number, skips_number,
-                                            fields_number, fails_number)
+            self._msg_count.get("words_number", 0),
+            self._msg_count.get("fields_number", 0),
+            self._msg_count.get("fails_number", 0),
+            self._msg_count.get("skips_number", 0),
+        )
+        number_info = _INFO_TEMPLATE.format(
+            words_number, skips_number, fields_number, fails_number
+        )
         self._update(
-            label=number_info,
-            value=words_number + skips_number + fails_number)
+            label=number_info, value=words_number + skips_number + fails_number
+        )
         self._win.adjustSize()
         self.app.processEvents()
 
@@ -83,14 +86,15 @@ class ProgressWindow(object):
         # setup window
         label = label or _("Processing...")
         parent = parent or self.app.activeWindow() or self.mw
-        self._win = QProgressDialog(label, '', min, max, parent)
+        self._win = QProgressDialog(label, "", min, max, parent)
         self._win.setWindowModality(Qt.ApplicationModal)
         self._win.setCancelButton(None)
         self._win.canceled.connect(self.finish)
         self._win.setWindowTitle("FastWQ - Querying...")
         self._win.setModal(True)
         self._win.setWindowFlags(
-            self._win.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+            self._win.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )
         self._win.setWindowIcon(APP_ICON)
         self._win.setAutoReset(True)
         self._win.setAutoClose(True)

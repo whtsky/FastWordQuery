@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -20,14 +19,15 @@
 from ..utils import Empty, Queue
 
 
-class ServicePool(object):
+class ServicePool:
     """
     Service instance pool
     """
+
     def __init__(self, manager):
         self.pools = {}
         self.manager = manager
-        
+
     def get(self, unique):
         queue = self.pools.get(unique, None)
         if queue:
@@ -35,9 +35,9 @@ class ServicePool(object):
                 return queue.get(True, timeout=0.1)
             except Empty:
                 pass
-        
+
         return self.manager.get_service(unique)
-    
+
     def put(self, service):
         if service is None:
             return
@@ -46,8 +46,8 @@ class ServicePool(object):
         if queue == None:
             queue = Queue()
             self.pools[unique] = queue
-            
+
         queue.put(service)
-        
+
     def clean(self):
         self.pools = {}

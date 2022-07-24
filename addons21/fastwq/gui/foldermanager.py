@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -23,16 +22,16 @@ from ..context import config
 from ..lang import _, _sl
 from .base import WIDGET_SIZE, Dialog
 
-__all__ = ['FoldersManageDialog']
+__all__ = ["FoldersManageDialog"]
 
 
 class FoldersManageDialog(Dialog):
-    '''
+    """
     Dictionary folder manager window. add or remove dictionary folders.
-    '''
+    """
 
-    def __init__(self, parent, title=u'Dictionary Folder Manager'):
-        super(FoldersManageDialog, self).__init__(parent, title)
+    def __init__(self, parent, title="Dictionary Folder Manager"):
+        super().__init__(parent, title)
         # self._dict_paths = []
         self.build()
 
@@ -47,8 +46,8 @@ class FoldersManageDialog(Dialog):
         remove_btn.clicked.connect(self.remove_folder)
         self.folders_lst = QListWidget()
         self.folders_lst.addItems(config.dirs)
-        self.chk_use_filename = QCheckBox(_('CHECK_FILENAME_LABEL'))
-        self.chk_export_media = QCheckBox(_('EXPORT_MEDIA'))
+        self.chk_use_filename = QCheckBox(_("CHECK_FILENAME_LABEL"))
+        self.chk_export_media = QCheckBox(_("EXPORT_MEDIA"))
         self.chk_use_filename.setChecked(config.use_filename)
         self.chk_export_media.setChecked(config.export_media)
         chk_layout = QHBoxLayout()
@@ -65,12 +64,13 @@ class FoldersManageDialog(Dialog):
     def add_folder(self):
         dir_ = QFileDialog.getExistingDirectory(
             self,
-            caption=u"Select Folder",
+            caption="Select Folder",
             directory=config.last_folder,
-            options=QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+            options=QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
+        )
         if dir_:
             self.folders_lst.addItem(dir_)
-            config.update({'last_folder': dir_})
+            config.update({"last_folder": dir_})
 
     def remove_folder(self):
         item = self.folders_lst.takeItem(self.folders_lst.currentRow())
@@ -78,22 +78,21 @@ class FoldersManageDialog(Dialog):
 
     @property
     def dirs(self):
-        '''dictionary folders list'''
+        """dictionary folders list"""
         return [
-            self.folders_lst.item(i).text()
-            for i in range(self.folders_lst.count())
+            self.folders_lst.item(i).text() for i in range(self.folders_lst.count())
         ]
 
     def accept(self):
-        '''ok button clicked'''
+        """ok button clicked"""
         self.save()
-        super(FoldersManageDialog, self).accept()
+        super().accept()
 
     def save(self):
-        '''save config to file'''
+        """save config to file"""
         data = {
-            'dirs': self.dirs,
-            'use_filename': self.chk_use_filename.isChecked(),
-            'export_media': self.chk_export_media.isChecked()
+            "dirs": self.dirs,
+            "use_filename": self.chk_use_filename.isChecked(),
+            "export_media": self.chk_export_media.isChecked(),
         }
         config.update(data)

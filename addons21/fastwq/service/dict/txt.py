@@ -1,23 +1,21 @@
-#-*- coding:utf-8 -*-
 import re
 
 from aqt.utils import showInfo, showText
 from ..base import LocalService, export, register, with_styles
 
-path = u'D:\\dicts\\LDOCE\\d.txt'
+path = "D:\\dicts\\LDOCE\\d.txt"
 
 
-@register(u'txt测试')
+@register("txt测试")
 class TxtTest(LocalService):
-
     def __init__(self):
-        super(TxtTest, self).__init__(path)
+        super().__init__(path)
         try:
-            self.handle = open(path, 'rb')
+            self.handle = open(path, "rb")
         except:
             self.handle = None
 
-    @export(u'all')
+    @export("all")
     def fld_phonetic(self):
         if not self.handle:
             return

@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -31,7 +30,7 @@ from ..utils import Empty, MapDict, Queue
 from .common import InvalidWordException, query_flds, update_note_fields
 
 
-__all__ = ['QueryWorkerManager']
+__all__ = ["QueryWorkerManager"]
 
 
 class QueryThread(QThread):
@@ -42,7 +41,7 @@ class QueryThread(QThread):
     note_flush = pyqtSignal(Note)
 
     def __init__(self, manager):
-        super(QueryThread, self).__init__()
+        super().__init__()
         self.index = 0
         self.exit = False
         self.finished = False
@@ -60,7 +59,9 @@ class QueryThread(QThread):
                 continue
 
             try:
-                results, success_num, missed_css = query_flds(note, self.manager.query_fields)
+                results, success_num, missed_css = query_flds(
+                    note, self.manager.query_fields
+                )
                 if not self.exit and self.manager:
                     if self.manager.update(note, results, success_num, missed_css):
                         self.note_flush.emit(note)
@@ -76,7 +77,7 @@ class QueryThread(QThread):
         self.finished = True
 
 
-class QueryWorkerManager(object):
+class QueryWorkerManager:
     """
     Query Worker Thread Manager
     """
@@ -135,13 +136,15 @@ class QueryWorkerManager(object):
             return False
 
     def update_progress(self):
-        self.progress.update_labels(MapDict(
-            type='count',
-            words_number=self.counter,
-            skips_number=self.skips,
-            fails_number=self.fails,
-            fields_number=self.fields
-        ))
+        self.progress.update_labels(
+            MapDict(
+                type="count",
+                words_number=self.counter,
+                skips_number=self.skips,
+                fails_number=self.fails,
+                fields_number=self.fields,
+            )
+        )
         mw.app.processEvents()
 
     def join(self):
@@ -155,7 +158,7 @@ class QueryWorkerManager(object):
                 mw.app.processEvents()
                 worker.wait(30)
         self.progress.finish()
-    
+
     def handle_flush(self, note):
         if self.flush and note:
             note.flush()

@@ -1,4 +1,4 @@
-class BaseStemmer(object):
+class BaseStemmer:
     def __init__(self):
         self.set_current("")
         self.maxCacheSize = 10000
@@ -6,9 +6,9 @@ class BaseStemmer(object):
         self._counter = 0
 
     def set_current(self, value):
-        '''
+        """
         Set the self.current string.
-        '''
+        """
         self.current = value
         self.cursor = 0
         self.limit = len(self.current)
@@ -17,18 +17,18 @@ class BaseStemmer(object):
         self.ket = self.limit
 
     def get_current(self):
-        '''
+        """
         Get the self.current string.
-        '''
+        """
         return self.current
 
     def copy_from(self, other):
-        self.current          = other.current
-        self.cursor           = other.cursor
-        self.limit            = other.limit
-        self.limit_backward   = other.limit_backward
-        self.bra              = other.bra
-        self.ket              = other.ket
+        self.current = other.current
+        self.cursor = other.cursor
+        self.limit = other.limit
+        self.limit_backward = other.limit_backward
+        self.bra = other.bra
+        self.ket = other.ket
 
     def in_grouping(self, s, min, max):
         if self.cursor >= self.limit:
@@ -62,7 +62,7 @@ class BaseStemmer(object):
             self.cursor += 1
             return True
         ch -= min
-        if (s[ch >> 3] & (0X1 << (ch & 0x7))) == 0:
+        if (s[ch >> 3] & (0x1 << (ch & 0x7))) == 0:
             self.cursor += 1
             return True
         return False
@@ -75,7 +75,7 @@ class BaseStemmer(object):
             self.cursor -= 1
             return True
         ch -= min
-        if (s[ch >> 3] & (0X1 << (ch & 0x7))) == 0:
+        if (s[ch >> 3] & (0x1 << (ch & 0x7))) == 0:
             self.cursor -= 1
             return True
         return False
@@ -119,7 +119,7 @@ class BaseStemmer(object):
     def eq_s(self, s_size, s):
         if self.limit - self.cursor < s_size:
             return False
-        if self.current[self.cursor:self.cursor + s_size] != s:
+        if self.current[self.cursor : self.cursor + s_size] != s:
             return False
         self.cursor += s_size
         return True
@@ -127,7 +127,7 @@ class BaseStemmer(object):
     def eq_s_b(self, s_size, s):
         if self.cursor - self.limit_backward < s_size:
             return False
-        if self.current[self.cursor - s_size:self.cursor] != s:
+        if self.current[self.cursor - s_size : self.cursor] != s:
             return False
         self.cursor -= s_size
         return True
@@ -153,7 +153,7 @@ class BaseStemmer(object):
         while True:
             k = i + ((j - i) >> 1)
             diff = 0
-            common = min(common_i, common_j) # smalle
+            common = min(common_i, common_j)  # smalle
             w = v[k]
             for i2 in range(common, w.s_size):
                 if c + common == l:
@@ -171,9 +171,9 @@ class BaseStemmer(object):
                 common_i = common
             if j - i <= 1:
                 if i > 0:
-                    break # v->s has been inspected
+                    break  # v->s has been inspected
                 if j == i:
-                    break # only one item in v
+                    break  # only one item in v
                 # - but now we need to go round once more to get
                 # v->s inspected. self looks messy, but is actually
                 # the optimal approach.
@@ -194,17 +194,17 @@ class BaseStemmer(object):
             i = w.substring_i
             if i < 0:
                 return 0
-        return -1 # not reachable
+        return -1  # not reachable
 
     def find_among_b(self, v, v_size):
-        '''
+        """
         find_among_b is for backwards processing. Same comments apply
-        '''
+        """
         i = 0
         j = v_size
 
         c = self.cursor
-        lb = self.limit_backward;
+        lb = self.limit_backward
 
         common_i = 0
         common_j = 0
@@ -252,17 +252,17 @@ class BaseStemmer(object):
             i = w.substring_i
             if i < 0:
                 return 0
-        return -1 # not reachable
+        return -1  # not reachable
 
     def replace_s(self, c_bra, c_ket, s):
-        '''
+        """
         to replace chars between c_bra and c_ket in self.current by the
         chars in s.
 
         @type c_bra int
         @type c_ket int
         @type s: string
-        '''
+        """
         adjustment = len(s) - (c_ket - c_bra)
         self.current = self.current[0:c_bra] + s + self.current[c_ket:]
         self.limit += adjustment
@@ -273,14 +273,19 @@ class BaseStemmer(object):
         return adjustment
 
     def slice_check(self):
-        if self.bra < 0 or self.bra > self.ket or self.ket > self.limit or self.limit > len(self.current):
+        if (
+            self.bra < 0
+            or self.bra > self.ket
+            or self.ket > self.limit
+            or self.limit > len(self.current)
+        ):
             return False
         return True
 
     def slice_from(self, s):
-        '''
+        """
         @type s string
-        '''
+        """
         result = False
         if self.slice_check():
             self.replace_s(self.bra, self.ket, s)
@@ -291,11 +296,11 @@ class BaseStemmer(object):
         return self.slice_from("")
 
     def insert(self, c_bra, c_ket, s):
-        '''
+        """
         @type c_bra int
         @type c_ket int
         @type s: string
-        '''
+        """
         adjustment = self.replace_s(c_bra, c_ket, s)
         if c_bra <= self.bra:
             self.bra += adjustment
@@ -303,21 +308,21 @@ class BaseStemmer(object):
             self.ket += adjustment
 
     def slice_to(self, s):
-        '''
+        """
         Copy the slice into the supplied StringBuffer
 
         @type s: string
-        '''
-        result = ''
+        """
+        result = ""
         if self.slice_check():
-            result = self.current[self.bra:self.ket]
+            result = self.current[self.bra : self.ket]
         return result
 
     def assign_to(self, s):
-        '''
+        """
         @type s: string
-        '''
-        return self.current[0:self.limit]
+        """
+        return self.current[0 : self.limit]
 
     def _stem_word(self, word):
         cache = self._cache.get(word)
@@ -334,7 +339,9 @@ class BaseStemmer(object):
 
     def _clear_cache(self):
         removecount = int(len(self._cache) - self.maxCacheSize * 8 / 10)
-        oldcaches = sorted(self._cache.items(), key=lambda cache: cache[1][1])[0:removecount]
+        oldcaches = sorted(self._cache.items(), key=lambda cache: cache[1][1])[
+            0:removecount
+        ]
         for key, value in oldcaches:
             del self._cache[key]
 

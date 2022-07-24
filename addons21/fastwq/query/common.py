@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -35,8 +34,13 @@ from ..service.base import LocalService
 from ..utils import wrap_css
 
 __all__ = [
-    'InvalidWordException', 'update_note_fields', 'update_note_field',
-    'promot_choose_css', 'add_to_tmpl', 'query_flds', 'inspect_note'
+    "InvalidWordException",
+    "update_note_fields",
+    "update_note_field",
+    "promot_choose_css",
+    "add_to_tmpl",
+    "query_flds",
+    "inspect_note",
 ]
 
 
@@ -52,12 +56,12 @@ def inspect_note(note):
     return maps: dicts map of current note
     """
 
-    conf = config.get_maps(note.model()['id'])
-    maps_list = {'list': [conf], 'def': 0} if isinstance(conf, list) else conf
-    maps = maps_list['list'][maps_list['def']]
-    maps = maps if isinstance(maps, list) else maps['fields']
+    conf = config.get_maps(note.model()["id"])
+    maps_list = {"list": [conf], "def": 0} if isinstance(conf, list) else conf
+    maps = maps_list["list"][maps_list["def"]]
+    maps = maps if isinstance(maps, list) else maps["fields"]
     for i, m in enumerate(maps):
-        if m.get('word_checked', False):
+        if m.get("word_checked", False):
             word_ord = i
             break
     else:
@@ -66,7 +70,7 @@ def inspect_note(note):
         word_ord = 0
 
     def purify_word(word):
-        return word.strip() if word else ''
+        return word.strip() if word else ""
 
     word = purify_word(note.fields[word_ord])
     return word_ord, word, maps
@@ -74,8 +78,8 @@ def inspect_note(note):
 
 def strip_combining(txt):
     "Return txt with all combining characters removed."
-    norm = unicodedata.normalize('NFKD', txt)
-    return u"".join([c for c in norm if not unicodedata.combining(c)])
+    norm = unicodedata.normalize("NFKD", txt)
+    return "".join([c for c in norm if not unicodedata.combining(c)])
 
 
 def update_note_fields(note, results):
@@ -106,7 +110,7 @@ def update_note_field(note, fld_index, fld_result):
     if not config.force_update and not result:
         return 0
 
-    value = result if result else ''
+    value = result if result else ""
     if note.fields[fld_index] != value:
         note.fields[fld_index] = value
         return 1
@@ -115,23 +119,20 @@ def update_note_field(note, fld_index, fld_result):
 
 
 def promot_choose_css(missed_css):
-    '''
+    """
     Choose missed css file and copy to user folder
-    '''
+    """
     checked = set()
     for css in missed_css:
-        filename = u'_' + css['file']
-        if not os.path.exists(filename) and not css['file'] in checked:
-            checked.add(css['file'])
-            showInfo(
-                Template.miss_css.format(dict=css['title'], css=css['file']))
+        filename = "_" + css["file"]
+        if not os.path.exists(filename) and not css["file"] in checked:
+            checked.add(css["file"])
+            showInfo(Template.miss_css.format(dict=css["title"], css=css["file"]))
             try:
-                filepath = css['dict_path'][:css['dict_path'].rindex(os.path.
-                                                                     sep) + 1]
+                filepath = css["dict_path"][: css["dict_path"].rindex(os.path.sep) + 1]
                 filepath = QFileDialog.getOpenFileName(
-                    directory=filepath,
-                    caption=u'Choose css file',
-                    filter=u'CSS (*.css)')
+                    directory=filepath, caption="Choose css file", filter="CSS (*.css)"
+                )
                 if filepath:
                     shutil.copy(filepath, filename)
                     wrap_css(filename)
@@ -142,21 +143,23 @@ def promot_choose_css(missed_css):
 
 def add_to_tmpl(note, **kwargs):
     # templates
-    '''
+    """
     [{u'name': u'Card 1', u'qfmt': u'{{Front}}\n\n', u'did': None, u'bafmt': u'',
         u'afmt': u'{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}\n\n{{12}}\n\n{{44}}\n\n', u'ord': 0, u'bqfmt': u''}]
-    '''
+    """
     # showInfo(str(kwargs))
-    afmt = note.model()['tmpls'][0]['afmt']
+    afmt = note.model()["tmpls"][0]["afmt"]
     if kwargs:
-        jsfile, js = kwargs.get('jsfile', None), kwargs.get('js', None)
+        jsfile, js = kwargs.get("jsfile", None), kwargs.get("js", None)
         if js and js.strip():
             addings = js.strip()
             if addings not in afmt:
-                if not addings.startswith(u'<script') and not addings.endswith(
-                        u'/script>'):
-                    addings = u'\n<script type="text/javascript">\n{}\n</script>'.format(
-                        addings)
+                if not addings.startswith("<script") and not addings.endswith(
+                    "/script>"
+                ):
+                    addings = '\n<script type="text/javascript">\n{}\n</script>'.format(
+                        addings
+                    )
                 afmt += addings
         if jsfile:
             # new_jsfile = u'_' + \
@@ -166,15 +169,17 @@ def add_to_tmpl(note, **kwargs):
             # afmt += addings
             jsfile = jsfile if isinstance(jsfile, list) else [jsfile]
             for fn in jsfile:
-                addings = '''
+                addings = """
 <script type="text/javascript">
     var script = document.createElement("script");
     script.src   = "{}";
     document.getElementsByTagName('head')[0].appendChild(script);
-</script>'''.format(fn)
+</script>""".format(
+                    fn
+                )
                 if addings not in afmt:
                     afmt += addings
-        note.model()['tmpls'][0]['afmt'] = afmt
+        note.model()["tmpls"][0]["afmt"] = afmt
 
 
 def query_flds(note, fileds=None):
@@ -199,19 +204,19 @@ def query_flds(note, fileds=None):
         if i == len(note.fields):
             break
         # ignore field
-        ignore = each.get('ignore', False)
+        ignore = each.get("ignore", False)
         if ignore:
             continue
         # skip valued
-        skip = each.get('skip_valued', False)
+        skip = each.get("skip_valued", False)
         if skip and len(note.fields[i]) != 0:
             continue
         # cloze
-        cloze = each.get('cloze_word', False)
+        cloze = each.get("cloze_word", False)
         # normal
-        dict_unique = each.get('dict_unique', '').strip()
-        dict_fld_ord = each.get('dict_fld_ord', -1)
-        fld_ord = each.get('fld_ord', -1)
+        dict_unique = each.get("dict_unique", "").strip()
+        dict_fld_ord = each.get("dict_fld_ord", -1)
+        fld_ord = each.get("fld_ord", -1)
         if dict_unique and dict_fld_ord != -1 and fld_ord != -1:
             if fileds is None or fld_ord in fileds:
                 s = services.get(dict_unique, None)
@@ -220,24 +225,26 @@ def query_flds(note, fileds=None):
                     if s and s.support:
                         services[dict_unique] = s
                 if s and s.support:
-                    tasks.append({
-                        'k': dict_unique,
-                        'w': word,
-                        'f': dict_fld_ord,
-                        'i': fld_ord,
-                        'cloze': cloze,
-                    })
+                    tasks.append(
+                        {
+                            "k": dict_unique,
+                            "w": word,
+                            "f": dict_fld_ord,
+                            "i": fld_ord,
+                            "cloze": cloze,
+                        }
+                    )
 
     success_num = 0
     result = defaultdict(QueryResult)
     for task in tasks:
         try:
-            service = services.get(task['k'], None)
-            qr = service.active(task['f'], task['w'])
+            service = services.get(task["k"], None)
+            qr = service.active(task["f"], task["w"])
             if qr:
-                if task['cloze']:
-                    qr['result'] = cloze_deletion(qr['result'], word)
-                result.update({task['i']: qr})
+                if task["cloze"]:
+                    qr["result"] = cloze_deletion(qr["result"], word)
+                result.update({task["i"]: qr})
                 success_num += 1
         except Exception as e:
             print(_("NO_QUERY_WORD"), e)
@@ -247,19 +254,21 @@ def query_flds(note, fileds=None):
     for service in services.values():
         if isinstance(service, LocalService):
             for css in service.missed_css:
-                missed_css.append({
-                    'dict_path': service.dict_path,
-                    'title': service.title,
-                    'file': css
-                })
+                missed_css.append(
+                    {
+                        "dict_path": service.dict_path,
+                        "title": service.title,
+                        "file": css,
+                    }
+                )
         service_pool.put(service)
 
     return result, -1 if len(tasks) == 0 else success_num, missed_css
 
 
 def cloze_deletion(text, cloze):
-    '''create cloze deletion text'''
-    text = text.replace('’', '\'')
+    """create cloze deletion text"""
+    text = text.replace("’", "'")
     result = text
     offset = 0
     term = _stemmer.stemWord(cloze).lower()
@@ -283,10 +292,11 @@ def cloze_deletion(text, cloze):
             if w[:ln].lower() == cloze.lower():
                 e = s + ln
                 w = word[:ln]
-            result = result[:s + offset] + (
-                config.cloze_str % w) + result[e + offset:]
+            result = (
+                result[: s + offset] + (config.cloze_str % w) + result[e + offset :]
+            )
             offset += len(config.cloze_str) - 2
     return result
 
 
-_stemmer = stemmer('english')
+_stemmer = stemmer("english")

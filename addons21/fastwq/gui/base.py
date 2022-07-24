@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -24,38 +23,38 @@ from aqt.qt import *
 
 from ..context import APP_ICON
 
-__all__ = ['Dialog', 'WIDGET_SIZE']
+__all__ = ["Dialog", "WIDGET_SIZE"]
 
 
 class Dialog(QDialog):
-    '''
+    """
     Base used for all dialog windows.
-    '''
+    """
 
     def __init__(self, parent, title):
-        '''
+        """
         Set the modal status for the dialog, sets its layout to the
         return value of the _ui() method, and sets a default title.
-        '''
+        """
 
         self._title = title if "FastWQ" in title else "FastWQ - " + title
         self._parent = parent
-        super(Dialog, self).__init__(parent)
+        super().__init__(parent)
 
         self.setModal(True)
-        self.setWindowFlags(
-            self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.setWindowIcon(APP_ICON)
         self.setWindowTitle(self._title)
         # 2 & 3 & mac compatible
         if isMac and sys.hexversion >= 0x03000000:
-            QApplication.setStyle('Fusion')
+            QApplication.setStyle("Fusion")
 
 
-class WidgetSize(object):
-    '''
+class WidgetSize:
+    """
     constant values
-    '''
+    """
+
     dialog_width = 850
     dialog_height_margin = 166 if isMac and sys.hexversion < 0x03000000 else 146
     map_min_height = 0

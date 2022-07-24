@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -33,21 +32,24 @@ from .service import service_pool
 from .utils import get_icon
 
 __all__ = [
-    'browser_menu', 'customize_addcards', 'config_menu', 'context_menu'
+    "browser_menu",
+    "customize_addcards",
+    "config_menu",
+    "context_menu",
 ]  # 'check_updates',
 
 have_setup = False
-my_shortcut = ''
+my_shortcut = ""
 
-_OK_ICON = get_icon('ok.png')
-_NULL_ICON = get_icon('null.png')
+_OK_ICON = get_icon("ok.png")
+_NULL_ICON = get_icon("null.png")
 
 
 def set_options_def(mid, i):
     conf = config.get_maps(mid)
-    conf = {'list': [conf], 'def': 0} if isinstance(conf, list) else conf
-    if conf['def'] != i:
-        conf['def'] = i
+    conf = {"list": [conf], "def": 0} if isinstance(conf, list) else conf
+    if conf["def"] != i:
+        conf["def"] = i
         data = dict()
         data[mid] = conf
         config.update(data)
@@ -73,21 +75,21 @@ def browser_menu():
             try:
                 menu.clear()
             except RuntimeError:
-                remHook('config.update', init_fastwq_menu)
+                remHook("config.update", init_fastwq_menu)
                 return
             # Query Selected
-            action = QAction(_('QUERY_SELECTED'), browser)
+            action = QAction(_("QUERY_SELECTED"), browser)
             action.triggered.connect(lambda: query_from_browser(browser))
             action.setShortcut(QKeySequence(my_shortcut))
             menu.addAction(action)
             # Options
-            action = QAction(_('OPTIONS'), browser)
+            action = QAction(_("OPTIONS"), browser)
 
             def _show_options():
                 model_id = -1
                 for note_id in browser.selectedNotes():
                     note = browser.mw.col.getNote(note_id)
-                    model_id = note.model()['id']
+                    model_id = note.model()["id"]
                     break
                 show_options(browser, model_id)
 
@@ -97,22 +99,20 @@ def browser_menu():
             # Default configs
             menu.addSeparator()
             b = False
-            for m in sorted(
-                    browser.mw.col.models.all(), key=itemgetter("name")):
-                conf = config.get_maps(m['id'])
-                conf = {
-                    'list': [conf],
-                    'def': 0
-                } if isinstance(conf, list) else conf
-                maps_list = conf['list']
+            for m in sorted(browser.mw.col.models.all(), key=itemgetter("name")):
+                conf = config.get_maps(m["id"])
+                conf = {"list": [conf], "def": 0} if isinstance(conf, list) else conf
+                maps_list = conf["list"]
                 if len(maps_list) > 1:
-                    submenu = menu.addMenu(m['name'])
+                    submenu = menu.addMenu(m["name"])
                     for i, maps in enumerate(maps_list):
                         submenu.addAction(
-                            _OK_ICON if i == conf['def'] else _NULL_ICON,
-                            _('CONFIG_INDEX') % (i + 1) if isinstance(
-                                maps, list) else maps['name'],
-                            lambda mid=m['id'], i=i: set_options_def(mid, i))
+                            _OK_ICON if i == conf["def"] else _NULL_ICON,
+                            _("CONFIG_INDEX") % (i + 1)
+                            if isinstance(maps, list)
+                            else maps["name"],
+                            lambda mid=m["id"], i=i: set_options_def(mid, i),
+                        )
                     b = True
             if b:
                 menu.addSeparator()
@@ -123,15 +123,15 @@ def browser_menu():
             # menu.addAction(action)
 
             # About
-            action = QAction(_('ABOUT'), browser)
+            action = QAction(_("ABOUT"), browser)
             action.triggered.connect(lambda: show_about_dialog(browser))
             menu.addAction(action)
 
         # end init_fastwq_menu
         init_fastwq_menu()
-        addHook('config.update', init_fastwq_menu)
+        addHook("config.update", init_fastwq_menu)
 
-    addHook('browser.setupMenus', on_setup_menus)
+    addHook("browser.setupMenus", on_setup_menus)
 
 
 def customize_addcards():
@@ -140,16 +140,16 @@ def customize_addcards():
     """
 
     def add_query_button(self):
-        '''
+        """
         add a button in add card window
-        '''
+        """
         bb = self.form.buttonBox
         ar = QDialogButtonBox.ActionRole
         qshortcut = QKeySequence(my_shortcut)
         # button
-        fastwqBtn = QPushButton(_("QUERY") + u" " + downArrow())
+        fastwqBtn = QPushButton(_("QUERY") + " " + downArrow())
         fastwqBtn.setShortcut(qshortcut)
-        fastwqBtn.setToolTip(_(u"Shortcut: %s") % shortcut(my_shortcut))
+        fastwqBtn.setToolTip(_("Shortcut: %s") % shortcut(my_shortcut))
         bb.addButton(fastwqBtn, ar)
 
         # signal
@@ -159,40 +159,43 @@ def customize_addcards():
                     menu = QMenu(self)
                     allFieldsAction = QAction(_("ALL_FIELDS"))
                     allFieldsAction.setShortcut(qshortcut)
-                    allFieldsAction.triggered.connect(lambda: query_from_editor_fields(self.editor))
+                    allFieldsAction.triggered.connect(
+                        lambda: query_from_editor_fields(self.editor)
+                    )
                     menu.addAction(allFieldsAction)
                     # default options
-                    mid = self.editor.note.model()['id']
+                    mid = self.editor.note.model()["id"]
                     conf = config.get_maps(mid)
-                    conf = {
-                        'list': [conf],
-                        'def': 0
-                    } if isinstance(conf, list) else conf
-                    maps_list = conf['list']
+                    conf = (
+                        {"list": [conf], "def": 0} if isinstance(conf, list) else conf
+                    )
+                    maps_list = conf["list"]
                     if len(maps_list) > 1:
                         menu.addSeparator()
                         for i, maps in enumerate(maps_list):
                             menu.addAction(
-                                _OK_ICON if i == conf['def'] else _NULL_ICON,
-                                _('CONFIG_INDEX') % (i + 1) if isinstance(
-                                    maps, list) else maps['name'],
-                                lambda mid=mid, i=i: set_options_def(mid, i))
+                                _OK_ICON if i == conf["def"] else _NULL_ICON,
+                                _("CONFIG_INDEX") % (i + 1)
+                                if isinstance(maps, list)
+                                else maps["name"],
+                                lambda mid=mid, i=i: set_options_def(mid, i),
+                            )
                         menu.addSeparator()
                     # end default options
                     optionsAction = QAction(_("OPTIONS"))
-                    optionsAction.triggered.connect(lambda: show_options(self, self.editor.note.model()['id']))
+                    optionsAction.triggered.connect(
+                        lambda: show_options(self, self.editor.note.model()["id"])
+                    )
                     menu.addAction(allFieldsAction)
                     menu.addAction(optionsAction)
-                    menu.exec_(
-                        fastwqBtn.mapToGlobal(QPoint(0, fastwqBtn.height())))
+                    menu.exec_(fastwqBtn.mapToGlobal(QPoint(0, fastwqBtn.height())))
             else:
                 query_from_editor_fields(self.editor)
 
         fastwqBtn.mousePressEvent = onQuery
         fastwqBtn.clicked.connect(onQuery)
 
-    AddCards.setupButtons = wrap(AddCards.setupButtons, add_query_button,
-                                 "after")
+    AddCards.setupButtons = wrap(AddCards.setupButtons, add_query_button, "after")
 
 
 def config_menu():
@@ -205,7 +208,7 @@ def config_menu():
 
 
 def context_menu():
-    '''mouse right click menu'''
+    """mouse right click menu"""
 
     def on_setup_menus(web_view, menu):
         """
@@ -213,47 +216,49 @@ def context_menu():
         """
         if not isinstance(web_view.editor.currentField, int):
             return
-        current_model_id = web_view.editor.note.model()['id']
+        current_model_id = web_view.editor.note.model()["id"]
         conf = config.get_maps(current_model_id)
-        maps_list = conf if isinstance(conf, list) else conf['list']
+        maps_list = conf if isinstance(conf, list) else conf["list"]
         curr_flds = []
         names = []
         for i, maps in enumerate(maps_list):
-            maps = maps if isinstance(maps, list) else maps['fields']
+            maps = maps if isinstance(maps, list) else maps["fields"]
             for mord, m in enumerate(maps):
-                if m.get('word_checked', False):
+                if m.get("word_checked", False):
                     word_ord = mord
                     break
             if web_view.editor.currentField != word_ord:
                 each = maps[web_view.editor.currentField]
-                ignore = each.get('ignore', False)
+                ignore = each.get("ignore", False)
                 if not ignore:
-                    dict_unique = each.get('dict_unique', '').strip()
-                    dict_fld_ord = each.get('dict_fld_ord', -1)
-                    fld_ord = each.get('fld_ord', -1)
+                    dict_unique = each.get("dict_unique", "").strip()
+                    dict_fld_ord = each.get("dict_fld_ord", -1)
+                    fld_ord = each.get("fld_ord", -1)
                     if dict_unique and dict_fld_ord != -1 and fld_ord != -1:
                         s = service_pool.get(dict_unique)
                         if s and s.support:
-                            name = s.title + ' :-> ' + s.fields[dict_fld_ord]
+                            name = s.title + " :-> " + s.fields[dict_fld_ord]
                             if name not in names:
                                 names.append(name)
-                                curr_flds.append({'name': name, 'def': i})
+                                curr_flds.append({"name": name, "def": i})
                         service_pool.put(s)
 
-        submenu = menu.addMenu(_('QUERY'))
+        submenu = menu.addMenu(_("QUERY"))
         allFieldsAction = QAction(_("ALL_FIELDS"))
         allFieldsAction.setShortcut(QKeySequence(my_shortcut))
-        allFieldsAction.triggered.connect(lambda: query_from_editor_fields(web_view.editor))
+        allFieldsAction.triggered.connect(
+            lambda: query_from_editor_fields(web_view.editor)
+        )
         submenu.addAction(allFieldsAction)
         if len(curr_flds) > 0:
             # quer hook method
             def query_from_editor_hook(i):
                 conf = config.get_maps(current_model_id)
-                maps_old_def = 0 if isinstance(conf, list) else conf.get(
-                    'def', 0)
+                maps_old_def = 0 if isinstance(conf, list) else conf.get("def", 0)
                 set_options_def(current_model_id, i)
                 query_from_editor_fields(
-                    web_view.editor, fields=[web_view.editor.currentField])
+                    web_view.editor, fields=[web_view.editor.currentField]
+                )
                 set_options_def(current_model_id, maps_old_def)
 
             # sub menu
@@ -261,8 +266,12 @@ def context_menu():
             submenu.addSeparator()
             for c in curr_flds:
                 submenu.addAction(
-                    c['name'], lambda i=c['def']: query_from_editor_hook(i))
+                    c["name"], lambda i=c["def"]: query_from_editor_hook(i)
+                )
             submenu.addSeparator()
-        submenu.addAction(_("OPTIONS"), lambda: show_options(web_view, web_view.editor.note.model()['id']))
+        submenu.addAction(
+            _("OPTIONS"),
+            lambda: show_options(web_view, web_view.editor.note.model()["id"]),
+        )
 
-    addHook('EditorWebView.contextMenuEvent', on_setup_menus)
+    addHook("EditorWebView.contextMenuEvent", on_setup_menus)

@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 import gzip
 import hashlib
 import os
@@ -7,7 +6,7 @@ import warnings
 from struct import unpack
 
 
-class _StarDictIfo(object):
+class _StarDictIfo:
     """
     The .ifo file has the following format:
 
@@ -26,8 +25,8 @@ class _StarDictIfo(object):
     followed by an equal sign, then the value of that option, then a
     newline.  The options may be appear in any order.
 
-    Note that the dictionary must have at least a bookname, a wordcount and a 
-    idxfilesize, or the load will fail.  All other information is optional.  All 
+    Note that the dictionary must have at least a bookname, a wordcount and a
+    idxfilesize, or the load will fail.  All other information is optional.  All
     strings should be encoded in UTF-8.
 
     Available options:
@@ -47,70 +46,69 @@ class _StarDictIfo(object):
 
     def __init__(self, dict_prefix, container):
 
-        ifo_filename = '%s.ifo' % dict_prefix
+        ifo_filename = "%s.ifo" % dict_prefix
 
         try:
             _file = open(ifo_filename)
         except Exception as e:
-            raise Exception('ifo file opening error: "{}"'.format(e))
+            raise Exception(f'ifo file opening error: "{e}"')
 
         _file.readline()
 
         # skipping ifo header
-        _line = _file.readline().split('=')
-        if _line[0] == 'version':
+        _line = _file.readline().split("=")
+        if _line[0] == "version":
             self.version = _line[1]
         else:
-            raise Exception('ifo has invalid format')
+            raise Exception("ifo has invalid format")
 
         _config = {}
         for _line in _file:
-            _line_splited = _line.split('=')
+            _line_splited = _line.split("=")
             _config[_line_splited[0]] = _line_splited[1]
         _file.close()
 
-        self.bookname = _config.get('bookname', None).strip()
+        self.bookname = _config.get("bookname", None).strip()
         if self.bookname is None:
-            raise Exception('ifo has no bookname')
+            raise Exception("ifo has no bookname")
 
-        self.wordcount = _config.get('wordcount', None)
+        self.wordcount = _config.get("wordcount", None)
         if self.wordcount is None:
-            raise Exception('ifo has no wordcount')
+            raise Exception("ifo has no wordcount")
         self.wordcount = int(self.wordcount)
 
-        if self.version == '3.0.0':
+        if self.version == "3.0.0":
             try:
-                #_syn = open('%s.syn' % dict_prefix)    # not used
-                self.synwordcount = _config.get('synwordcount', None)
+                # _syn = open('%s.syn' % dict_prefix)    # not used
+                self.synwordcount = _config.get("synwordcount", None)
                 if self.synwordcount is None:
-                    raise Exception(
-                        'ifo has no synwordcount but .syn file exists')
+                    raise Exception("ifo has no synwordcount but .syn file exists")
                 self.synwordcount = int(self.synwordcount)
-            except IOError:
+            except OSError:
                 pass
 
-        self.idxfilesize = _config.get('idxfilesize', None)
+        self.idxfilesize = _config.get("idxfilesize", None)
         if self.idxfilesize is None:
-            raise Exception('ifo has no idxfilesize')
+            raise Exception("ifo has no idxfilesize")
         self.idxfilesize = int(self.idxfilesize)
 
-        self.idxoffsetbits = _config.get('idxoffsetbits', 32)
+        self.idxoffsetbits = _config.get("idxoffsetbits", 32)
         self.idxoffsetbits = int(self.idxoffsetbits)
 
-        self.author = _config.get('author', '').strip()
+        self.author = _config.get("author", "").strip()
 
-        self.email = _config.get('email', '').strip()
+        self.email = _config.get("email", "").strip()
 
-        self.website = _config.get('website', '').strip()
+        self.website = _config.get("website", "").strip()
 
-        self.description = _config.get('description', '').strip()
+        self.description = _config.get("description", "").strip()
 
-        self.date = _config.get('date', '').strip()
+        self.date = _config.get("date", "").strip()
 
-        self.sametypesequence = _config.get('sametypesequence', '').strip()
+        self.sametypesequence = _config.get("sametypesequence", "").strip()
 
 
-class _StarDictIdx(object):
+class _StarDictIdx:
     """
     The .idx file is just a word list.
 
@@ -119,51 +117,56 @@ class _StarDictIdx(object):
     Each entry in the word list contains three fields, one after the other:
          word_str;  // a utf-8 string terminated by '\0'.
          word_data_offset;  // word data's offset in .dict file
-         word_data_size;  // word data's total size in .dict file 
+         word_data_size;  // word data's total size in .dict file
     """
 
     def __init__(self, dict_prefix, container):
         self._container = container
 
-        idx_filename = '%s.idx' % dict_prefix
-        idx_filename_gz = '%s.gz' % idx_filename
+        idx_filename = "%s.idx" % dict_prefix
+        idx_filename_gz = "%s.gz" % idx_filename
 
         try:
             file = open_file(idx_filename, idx_filename_gz)
         except Exception as e:
-            raise Exception('idx file opening error: "{}"'.format(e))
+            raise Exception(f'idx file opening error: "{e}"')
 
         self._file = file.read()
 
         """ check file size """
         if file.tell() != container.ifo.idxfilesize:
-            raise Exception('size of the .idx file is incorrect')
+            raise Exception("size of the .idx file is incorrect")
         file.close()
 
         """ prepare main dict and parsing parameters """
         self._idx = {}
         idx_offset_bytes_size = int(container.ifo.idxoffsetbits / 8)
-        idx_offset_format = {4: 'L', 8: 'Q', }[idx_offset_bytes_size]
+        idx_offset_format = {
+            4: "L",
+            8: "Q",
+        }[idx_offset_bytes_size]
         idx_cords_bytes_size = idx_offset_bytes_size + 4
 
         """ parse data via regex """
-        record_pattern = br'([\d\D]+?\x00[\d\D]{' + str(
-            idx_cords_bytes_size).encode('utf-8') + br'})'
+        record_pattern = (
+            rb"([\d\D]+?\x00[\d\D]{"
+            + str(idx_cords_bytes_size).encode("utf-8")
+            + rb"})"
+        )
         matched_records = re.findall(record_pattern, self._file)
 
         """ check records count """
         if len(matched_records) != container.ifo.wordcount:
-            raise Exception('words count is incorrect')
+            raise Exception("words count is incorrect")
 
         """ unpack parsed records """
         for matched_record in matched_records:
-            c = matched_record.find(b'\x00')
+            c = matched_record.find(b"\x00")
             if c == 0:
                 continue
-            record_tuple = unpack(
-                '!%sc%sL' % (c + 1, idx_offset_format), matched_record)
-            word, cords = record_tuple[:c], record_tuple[c + 1:]
-            self._idx[b''.join(word)] = cords
+            record_tuple = unpack(f"!{c + 1}c{idx_offset_format}L", matched_record)
+            word, cords = record_tuple[:c], record_tuple[c + 1 :]
+            self._idx[b"".join(word)] = cords
 
     def __getitem__(self, word):
         """
@@ -171,13 +174,13 @@ class _StarDictIdx(object):
 
         @note: here may be placed flexible search realization
         """
-        return self._idx[word.encode('utf-8')]
+        return self._idx[word.encode("utf-8")]
 
     def __contains__(self, k):
         """
         returns True if index has a word k, else False
         """
-        return k.encode('utf-8') in self._idx
+        return k.encode("utf-8") in self._idx
 
     def __eq__(self, y):
         """
@@ -197,9 +200,10 @@ class _StarDictIdx(object):
         """
         if not self._container.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
         for key in self._idx.iterkeys():
-            yield key.decode('utf-8')
+            yield key.decode("utf-8")
 
     def keys(self):
         """
@@ -210,11 +214,12 @@ class _StarDictIdx(object):
 
         if not self._container.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
-        return [key.decode('utf-8') for key in self._idx.keys()]
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
+        return [key.decode("utf-8") for key in self._idx.keys()]
 
 
-class _StarDictDict(object):
+class _StarDictDict:
     """
     The .dict file is a pure data sequence, as the offset and size of each
     word is recorded in the corresponding .idx file.
@@ -255,12 +260,12 @@ class _StarDictDict(object):
     optimizations required by the "sametypesequence" option described
     above.
 
-    If "idxoffsetbits=64", the file size of the .dict file will be bigger 
-    than 4G. Because we often need to mmap this large file, and there is 
-    a 4G maximum virtual memory space limit in a process on the 32 bits 
-    computer, which will make we can get error, so "idxoffsetbits=64" 
-    dictionary can't be loaded in 32 bits machine in fact, StarDict will 
-    simply print a warning in this case when loading. 64-bits computers 
+    If "idxoffsetbits=64", the file size of the .dict file will be bigger
+    than 4G. Because we often need to mmap this large file, and there is
+    a 4G maximum virtual memory space limit in a process on the 32 bits
+    computer, which will make we can get error, so "idxoffsetbits=64"
+    dictionary can't be loaded in 32 bits machine in fact, StarDict will
+    simply print a warning in this case when loading. 64-bits computers
     should haven't this limit.
 
     Type identifiers
@@ -271,7 +276,7 @@ class _StarDictDict(object):
 
     Lower-case characters signify that a field's size is determined by a
     terminating '\0', while upper-case characters indicate that the data
-    begins with a network byte-ordered guint32 that gives the length of 
+    begins with a network byte-ordered guint32 that gives the length of
     the following data's size(NOT the whole size which is 4 bytes bigger).
 
     'm'
@@ -303,7 +308,7 @@ class _StarDictDict(object):
     A utf-8 string which is marked up with the xdxf language.
     See http://xdxf.sourceforge.net
     StarDict have these extention:
-    <rref> can have "type" attribute, it can be "image", "sound", "video" 
+    <rref> can have "type" attribute, it can be "image", "sound", "video"
     and "attach".
     <kref> can have "k" attribute.
 
@@ -358,13 +363,13 @@ class _StarDictDict(object):
         self._container = container
         self._in_memory = in_memory
 
-        dict_filename = '%s.dict' % dict_prefix
-        dict_filename_dz = '%s.dz' % dict_filename
+        dict_filename = "%s.dict" % dict_prefix
+        dict_filename_dz = "%s.dz" % dict_filename
 
         try:
             f = open_file(dict_filename, dict_filename_dz)
         except Exception as e:
-            raise Exception('dict file opening error: "{}"'.format(e))
+            raise Exception(f'dict file opening error: "{e}"')
 
         if in_memory:
             self._file = f.read()
@@ -381,7 +386,7 @@ class _StarDictDict(object):
         cords = self._container.idx[word]
 
         if self._in_memory:
-            bytes_ = self._file[cords[0]: cords[0] + cords[1]]
+            bytes_ = self._file[cords[0] : cords[0] + cords[1]]
         else:
             # seeking in file for data
             self._file.seek(cords[0])
@@ -389,18 +394,17 @@ class _StarDictDict(object):
             # reading data
             bytes_ = self._file.read(cords[1])
 
-        return bytes_.decode('utf-8')
+        return bytes_.decode("utf-8")
 
 
-class _StarDictSyn(object):
-
+class _StarDictSyn:
     def __init__(self, dict_prefix, container):
 
-        syn_filename = '%s.syn' % dict_prefix
+        syn_filename = "%s.syn" % dict_prefix
 
         try:
             self._file = open(syn_filename)
-        except IOError:
+        except OSError:
             # syn file is optional, passing silently
             pass
 
@@ -441,7 +445,8 @@ class Dictionary(dict):
 
         # reading somedict.dict or somedict.dict.dz
         self.dict = _StarDictDict(
-            dict_prefix=filename_prefix, container=self, in_memory=in_memory)
+            dict_prefix=filename_prefix, container=self, in_memory=in_memory
+        )
 
         # reading somedict.syn (optional)
         self.syn = _StarDictSyn(dict_prefix=filename_prefix, container=self)
@@ -530,7 +535,7 @@ class Dictionary(dict):
         """
         returns classname and bookname parameter of the x.ifo
         """
-        return u'%s %s' % (self.__class__, self.ifo.bookname)
+        return f"{self.__class__} {self.ifo.bookname}"
 
     def __setitem__(self, k, v):
         """
@@ -540,11 +545,11 @@ class Dictionary(dict):
 
     def clear(self):
         """
-        clear dict cache 
+        clear dict cache
         """
         self._dict_cache = dict()
 
-    def get(self, k, d=''):
+    def get(self, k, d=""):
         """
         returns translation of the word k from self.dict or d if k not in x.idx
 
@@ -564,7 +569,8 @@ class Dictionary(dict):
         """
         if not self.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
         return [(key, self[key]) for key in self.keys()]
 
     def iteritems(self):
@@ -573,7 +579,8 @@ class Dictionary(dict):
         """
         if not self.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
         for key in self.iterkeys():
             yield (key, self[key])
 
@@ -583,7 +590,8 @@ class Dictionary(dict):
         """
         if not self.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
         return self.idx.iterkeys()
 
     def itervalues(self):
@@ -598,7 +606,8 @@ class Dictionary(dict):
         """
         if not self.in_memory:
             warnings.warn(
-                'Iter dict items with in_memory=False may cause serious performance problem')
+                "Iter dict items with in_memory=False may cause serious performance problem"
+            )
         return self.idx.keys()
 
     def pop(self, k, d):
@@ -645,14 +654,14 @@ def open_file(regular, gz):
     """
     if os.path.exists(regular):
         try:
-            return open(regular, 'rb')
+            return open(regular, "rb")
         except Exception as e:
-            raise Exception('regular file opening error: "{}"'.format(e))
+            raise Exception(f'regular file opening error: "{e}"')
 
     if os.path.exists(gz):
         try:
-            return gzip.open(gz, 'rb')
+            return gzip.open(gz, "rb")
         except Exception as e:
-            raise Exception('gz file opening error: "{}"'.format(e))
+            raise Exception(f'gz file opening error: "{e}"')
 
-    raise ValueError('Neither regular nor gz file exists')
+    raise ValueError("Neither regular nor gz file exists")

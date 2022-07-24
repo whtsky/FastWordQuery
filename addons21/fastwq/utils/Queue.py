@@ -1,6 +1,7 @@
 """A multi-producer, multi-consumer queue."""
 
 from time import time as _time
+
 try:
     import threading as _threading
 except ImportError:
@@ -8,7 +9,7 @@ except ImportError:
 from collections import deque
 import heapq
 
-__all__ = ['Empty', 'Full', 'Queue', 'PriorityQueue', 'LifoQueue']
+__all__ = ["Empty", "Full", "Queue", "PriorityQueue", "LifoQueue"]
 
 
 class Empty(Exception):
@@ -65,7 +66,7 @@ class Queue:
             unfinished = self.unfinished_tasks - 1
             if unfinished <= 0:
                 if unfinished < 0:
-                    raise ValueError('task_done() called too many times')
+                    raise ValueError("task_done() called too many times")
                 self.all_tasks_done.notify_all()
             self.unfinished_tasks = unfinished
         finally:
@@ -214,10 +215,10 @@ class Queue:
 
 
 class PriorityQueue(Queue):
-    '''Variant of Queue that retrieves open entries in priority order (lowest first).
+    """Variant of Queue that retrieves open entries in priority order (lowest first).
 
     Entries are typically tuples of the form:  (priority number, data).
-    '''
+    """
 
     def _init(self, maxsize):
         self.queue = []
@@ -233,7 +234,7 @@ class PriorityQueue(Queue):
 
 
 class LifoQueue(Queue):
-    '''Variant of Queue that retrieves most recently added entries first.'''
+    """Variant of Queue that retrieves most recently added entries first."""
 
     def _init(self, maxsize):
         self.queue = []

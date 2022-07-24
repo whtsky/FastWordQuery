@@ -1,38 +1,38 @@
-#-*- coding:utf-8 -*-
 import random
 from ..base import *
 
 
-@register(u'Vocabulary.com')
+@register("Vocabulary.com")
 class Vocabulary(WebService):
-
     def __init__(self):
-        super(Vocabulary, self).__init__()
+        super().__init__()
 
     def _get_from_api(self):
-        data = self.get_response(u'https://www.vocabulary.com/dictionary/{}'.format(self.quote_word))
+        data = self.get_response(
+            f"https://www.vocabulary.com/dictionary/{self.quote_word}"
+        )
         soup = parse_html(data)
         result = {
-            'short': u'',
-            'long': u'',
+            "short": "",
+            "long": "",
         }
 
         # short
-        element = soup.find('p', class_='short')
+        element = soup.find("p", class_="short")
         if element:
-            result['short'] = u''.join(str(e) for e in element.contents)
+            result["short"] = "".join(str(e) for e in element.contents)
 
         # long
-        element = soup.find('p', class_='long')
+        element = soup.find("p", class_="long")
         if element:
-            result['long'] = u''.join(str(e) for e in element.contents)
+            result["long"] = "".join(str(e) for e in element.contents)
 
         return self.cache_this(result)
-    
-    @export([u'简短释义', u'Short definition'])
-    def fld_definate(self):
-        return self._get_field('short')
 
-    @export([u'详细释义', u'Long definition'])
+    @export(["简短释义", "Short definition"])
+    def fld_definate(self):
+        return self._get_field("short")
+
+    @export(["详细释义", "Long definition"])
     def fld_example(self):
-        return self._get_field('long')
+        return self._get_field("long")

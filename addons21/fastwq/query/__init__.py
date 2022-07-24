@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 #
 # Copyright (C) 2018 sthoo <sth201807@gmail.com>
 #
@@ -37,7 +36,7 @@ from ..service.base import LocalService
 from ..utils import Empty, MapDict, Queue, wrap_css
 
 
-__all__ = ['query_from_browser', 'query_from_editor_fields']
+__all__ = ["query_from_browser", "query_from_editor_fields"]
 
 
 def query_from_browser(browser):
@@ -48,8 +47,7 @@ def query_from_browser(browser):
     if not browser:
         return
 
-    notes = [browser.mw.col.getNote(note_id)
-             for note_id in browser.selectedNotes()]
+    notes = [browser.mw.col.getNote(note_id) for note_id in browser.selectedNotes()]
 
     if len(notes) == 1:
         query_from_editor_fields(browser.editor)
@@ -70,26 +68,27 @@ def query_from_editor_fields(editor, fields=None):
     flush = not editor.addMode
     nomaps = True
     for each in maps:
-        dict_unique = each.get('dict_unique', '').strip()
-        ignore = each.get('ignore', True)
+        dict_unique = each.get("dict_unique", "").strip()
+        ignore = each.get("ignore", True)
         if dict_unique and not ignore:
             nomaps = False
             break
     if nomaps:
         from ..gui import show_options
-        tooltip(_('PLS_SET_DICTIONARY_FIELDS'))
+
+        tooltip(_("PLS_SET_DICTIONARY_FIELDS"))
         show_options(
             editor.parentWindow,
-            editor.note.model()['id'],
+            editor.note.model()["id"],
             query_from_editor_fields,
             editor,
-            fields
+            fields,
         )
     else:
         editor.setNote(editor.note)
         query_all([editor.note], flush, fields)
         editor.setNote(editor.note, focusTo=0)
-        editor.saveNow(lambda:None)
+        editor.saveNow(lambda: None)
 
 
 def query_all(notes, flush=True, fields=None):
@@ -101,8 +100,8 @@ def query_all(notes, flush=True, fields=None):
         return
 
     work_manager = QueryWorkerManager()
-    #work_manager.reset()
-    #progress.start(max=len(notes), min=0, immediate=True)
+    # work_manager.reset()
+    # progress.start(max=len(notes), min=0, immediate=True)
     work_manager.flush = flush
     work_manager.query_fields = fields
     queue = work_manager.queue
@@ -113,9 +112,16 @@ def query_all(notes, flush=True, fields=None):
     work_manager.start()
     work_manager.join()
 
-    #progress.finish()
+    # progress.finish()
     promot_choose_css(work_manager.missed_css)
-    tooltip(u'{0} {1} {2}, {3} {4}'.format(_('UPDATED'), work_manager.counter, _(
-        'CARDS'), work_manager.fields, _('FIELDS')))
-    #work_manager.clean()
+    tooltip(
+        "{} {} {}, {} {}".format(
+            _("UPDATED"),
+            work_manager.counter,
+            _("CARDS"),
+            work_manager.fields,
+            _("FIELDS"),
+        )
+    )
+    # work_manager.clean()
     service_pool.clean()
