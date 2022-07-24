@@ -14,15 +14,8 @@ from .readmdict import MDD, MDX
 # import chardet
 
 # LZO compression is used for engine version < 2.0
-try:
-    import lzo
-except ImportError:
-    lzo = None
-    # print("LZO compression support is not available")
+lzo = None
 
-# 2x3 compatible
-if sys.hexversion >= 0x03000000:
-    unicode = str
 
 version = "1.1"
 

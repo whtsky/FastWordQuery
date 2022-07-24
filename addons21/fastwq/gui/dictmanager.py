@@ -28,10 +28,6 @@ from ..service import service_manager, service_pool
 from ..utils import get_icon
 from .base import WIDGET_SIZE, Dialog
 
-# 2x3 compatible
-if sys.hexversion >= 0x03000000:
-    unicode = str
-
 __all__ = ["DictManageDialog"]
 
 
@@ -151,7 +147,7 @@ class DictManageDialog(Dialog):
         if sys.hexversion >= 0x03000000:
             frm.text.setPlainText(open(path, encoding="utf-8").read())
         else:
-            frm.text.setPlainText(unicode(open(path).read(), "utf8"))
+            frm.text.setPlainText(str(open(path).read(), "utf8"))
         d.accepted.connect(lambda: self.on_accept_edit(path, frm))
         d.exec_()
 

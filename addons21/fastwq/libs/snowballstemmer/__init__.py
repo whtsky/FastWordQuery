@@ -7,7 +7,7 @@ language = {
 }
 
 try:
-    import Stemmer
+    import Stemmer  # type: ignore
 
     cext_available = True
 except ImportError:

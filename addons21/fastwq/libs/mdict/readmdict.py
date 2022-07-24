@@ -29,15 +29,7 @@ from .pureSalsa20 import Salsa20
 import zlib
 
 # LZO compression is used for engine version < 2.0
-try:
-    import lzo
-except ImportError:
-    lzo = None
-    print("LZO compression support is not available")
-
-# 2x3 compatible
-if sys.hexversion >= 0x03000000:
-    unicode = str
+lzo = None
 
 
 def _unescape_entities(text):
@@ -351,7 +343,7 @@ class MDict:
                     "user identification is needed to read encrypted file"
                 )
             regcode, userid = self._passcode
-            if isinstance(userid, unicode):
+            if isinstance(userid, str):
                 userid = userid.encode("utf8")
             if self.header[b"RegisterBy"] == b"EMail":
                 encrypted_key = _decrypt_regcode_by_email(regcode, userid)
@@ -976,7 +968,7 @@ if __name__ == "__main__":
     # read mdx file
     if ext.lower() == os.path.extsep + "mdx":
         mdx = MDX(args.filename, args.encoding, args.substyle, args.passcode)
-        if type(args.filename) is unicode:
+        if type(args.filename) is str:
             bfname = args.filename.encode("utf-8")
         else:
             bfname = args.filename
@@ -991,7 +983,7 @@ if __name__ == "__main__":
     mdd_filename = "".join([base, os.path.extsep, "mdd"])
     if os.path.exists(mdd_filename):
         mdd = MDD(mdd_filename, args.passcode)
-        if type(mdd_filename) is unicode:
+        if type(mdd_filename) is str:
             bfname = mdd_filename.encode("utf-8")
         else:
             bfname = mdd_filename

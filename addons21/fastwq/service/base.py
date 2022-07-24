@@ -44,22 +44,11 @@ from ..lang import _cl
 from ..libs import MdxBuilder, StardictBuilder
 from ..utils import MapDict, wrap_css
 
-try:
-    import urllib2
-except Exception:
-    import urllib.request as urllib2
+import urllib.request as urllib2
+from http.cookiejar import CookieJar
 
 
-try:
-    from cookielib import CookieJar
-except Exception:
-    from http.cookiejar import CookieJar
-
-
-try:
-    import threading as _threading
-except ImportError:
-    import dummy_threading as _threading
+import threading as _threading
 
 
 __all__ = [

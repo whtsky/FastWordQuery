@@ -1,3 +1,4 @@
 aqt==2.1.54
 mypy==0.971
 pre-commit==2.20.0
+types-beautifulsoup4==4.11.4 

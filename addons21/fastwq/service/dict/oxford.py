@@ -1,9 +1,6 @@
 import os
 
-try:
-    import urllib2
-except:
-    import urllib.request as urllib2
+import urllib.request as urllib2
 import json
 from aqt.utils import showInfo
 from ..base import WebService, export, register, with_styles
